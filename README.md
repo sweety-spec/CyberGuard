@@ -5,8 +5,12 @@
 ## 🎥 Demo Video
 [Click here to watch the project demo](https://drive.google.com/your-link)
 
----
+## 🔗 Live Project Link
 
+👉 Click here to view the live project:  
+(https://authtrails-9c71e.web.app/)
+
+---
 ## 🚀 Vision
 In an era of rising digital threats, transparency and speed are critical. CyberGuard bridges the gap between victims and law enforcement by automating the reporting process and providing professional-grade tracking for every case.
 
