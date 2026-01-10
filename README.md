@@ -91,20 +91,20 @@ CyberGuard enables citizens to file cybercrime complaints online, track their pr
     appId: "YOUR_APP_ID"
     };
     ```
-    ![Image of Firebase Authentication](Authentication.png)
     ### 🔐 FireBase Authentication Page
 <img src="assets/images/Authentication.png" width="600">
 
-    ![Image of Firebase for Enforcing Password Constraints](PasswordConstraints.png)
     ### 🔑 Password Constraints
 <img src="assets/images/PasswordConstraints.png" width="600">
 
 4. **Firebase Realtime Database Rules**
+   
     **Assumptions**
         Users authenticate using Firebase Auth
         Complaints are stored under /complaints
         User profile/role stored under /users/{uid}
         Admin role: "role": "admin"
+   
     **Database Rules Structure**
 {
   "rules": {
@@ -122,7 +122,7 @@ CyberGuard enables citizens to file cybercrime complaints online, track their pr
  }
 }
 
-5. **Creating an Admin User**
+6. **Creating an Admin User**
   * The Admin Login/Dashboard checks for a `role: "admin"` flag in the database before granting access.
   **Steps to create an Admin User :-**
   * For security reasons, there is NO OPTION TO CREATE an ADMIN USER directly from the FRONTEND.
@@ -132,7 +132,9 @@ CyberGuard enables citizens to file cybercrime complaints online, track their pr
   * STEP 4- Find the created user by clicking the arrow alondside alphanumeric ID of the records.
   * STEP 5- Click on the plus '+' icon (on right of the alphanumeric ID), in key box type 'role' & in value box type 'admin', then click on 'Add' option.
   * Now THE USER HAS BEEN GRANTED THE admin acces, he/she can now access the ADMIN DASHBOARD.
-  ![Image of Firebase Realtime Database for Admin Creation](AdminCreation.png)
+
+    ### 👮 Admin Creation Page
+<img src="assets/images/AdminCreation.png" width="600">
 
 5. **Install Node.js**
   Download from: https://nodejs.org
