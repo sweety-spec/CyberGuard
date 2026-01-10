@@ -92,8 +92,14 @@ CyberGuard enables citizens to file cybercrime complaints online, track their pr
     };
     ```
     ![Image of Firebase Authentication](Authentication.png)
+    ### 🔐 FireBase Authentication Page
+<img src="assets/images/Authentication.png" width="600">
+
     ![Image of Firebase for Enforcing Password Constraints](PasswordConstraints.png)
-3. **Firebase Realtime Database Rules**
+    ### 🔑 Password Constraints
+<img src="assets/images/PasswordConstraints.png" width="600">
+
+4. **Firebase Realtime Database Rules**
     **Assumptions**
         Users authenticate using Firebase Auth
         Complaints are stored under /complaints
@@ -116,7 +122,7 @@ CyberGuard enables citizens to file cybercrime complaints online, track their pr
  }
 }
 
-4. **Creating an Admin User**
+5. **Creating an Admin User**
   * The Admin Login/Dashboard checks for a `role: "admin"` flag in the database before granting access.
   **Steps to create an Admin User :-**
   * For security reasons, there is NO OPTION TO CREATE an ADMIN USER directly from the FRONTEND.
