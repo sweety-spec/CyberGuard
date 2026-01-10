@@ -123,8 +123,9 @@ CyberGuard enables citizens to file cybercrime complaints online, track their pr
       ".write": "auth != null",
       ".indexOn": ["caseId", "userEmail"]
     }
- }
+  }
 }
+
 
 6. **Creating an Admin User**
   * The Admin Login/Dashboard checks for a `role: "admin"` flag in the database before granting access.
