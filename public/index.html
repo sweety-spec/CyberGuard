@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>CyberGuard — Digital Grievance & Cybersecurity Platform</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", sans-serif;
+      background: linear-gradient(180deg, #020617 0%, #0f172a 100%);
+      color: #e5f7ff;
+      min-height: 100vh;
+    }
+
+    /* NAVBAR */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 22px 50px;
+      background: rgba(2,6,23,.85);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: "Orbitron", sans-serif;
+      font-size: 18px;
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    .nav-right a {
+      text-decoration: none;
+      margin-left: 12px;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 1px solid rgba(255,255,255,.2);
+      color: white;
+      transition: .2s;
+    }
+
+    .nav-right a.primary {
+      background: #38bdf8;
+      color: #020617;
+      border: none;
+    }
+
+    .nav-right a:hover {
+      transform: translateY(-1px);
+    }
+
+    /* HERO */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 90px 24px 70px;
+      text-align: center;
+    }
+
+    .hero img {
+      width: 200px;
+      max-width: 80%;
+      margin-bottom: 30px;
+      filter: drop-shadow(0 0 25px rgba(56,189,248,.25));
+    }
+
+    .hero h1 {
+      font-family: "Orbitron", sans-serif;
+      font-size: 46px;
+      color: #38bdf8;
+      margin-bottom: 14px;
+    }
+
+    .hero p {
+      max-width: 700px;
+      font-size: 17px;
+      color: #cbd5f5;
+      line-height: 1.6;
+    }
+
+    .hero-buttons {
+      margin-top: 28px;
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .hero-buttons a {
+      text-decoration: none;
+      padding: 14px 24px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      transition: .2s;
+    }
+
+    .hero-buttons .primary {
+      background: #38bdf8;
+      color: #020617;
+    }
+
+    .hero-buttons .secondary {
+      background: rgba(255,255,255,.12);
+      color: white;
+      border: 1px solid rgba(255,255,255,.25);
+    }
+
+    .hero-buttons a:hover {
+      transform: translateY(-2px);
+    }
+
+    /* SECTIONS */
+    section {
+      padding: 80px 8%;
+    }
+
+    section h2 {
+      font-family: "Orbitron", sans-serif;
+      font-size: 28px;
+      color: #38bdf8;
+      margin-bottom: 18px;
+    }
+
+    section p {
+      max-width: 900px;
+      line-height: 1.7;
+      color: #cbd5f5;
+      font-size: 15.5px;
+    }
+
+    /* CASE TYPES */
+    .case-grid {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+      gap: 18px;
+    }
+
+    .case-card {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      padding: 18px;
+      font-size: 14.5px;
+      color: #e5f7ff;
+    }
+
+    /* QUICK LINKS */
+    .links-grid {
+      margin-top: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+      gap: 16px;
+    }
+
+    .link-card {
+      background: rgba(255,255,255,.05);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 14px;
+      padding: 18px;
+    }
+
+    .link-card a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .helpline {
+      margin-top: 26px;
+      font-size: 20px;
+      font-weight: bolder;
+      color: #facc15;
+    }
+
+    /* FOOTER */
+    footer {
+      background: #020617;
+      text-align: center;
+      padding: 22px;
+      font-size: 14px;
+      color: #94a3b8;
+      border-top: 1px solid rgba(255,255,255,.08);
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- NAV -->
+  <div class="nav">
+    <div class="nav-left">
+      CyberGuard
+    </div>
+    <div class="nav-right">
+      <a href="LogIn.html">Log In</a>
+      <a href="SignUp.html" class="primary">Sign Up</a>
+      <a href="admin-login.html">Admin Login</a>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <div class="hero">
+    <img src="logo.png" alt="CyberGuard Logo">
+
+    <h1>CyberGuard</h1>
+    <p>
+      A secure digital grievance and cybersecurity platform that empowers citizens to report, track, and resolve cyber-crime incidents in a structured, transparent, and accountable way.
+    </p>
+
+    <div class="hero-buttons">
+      <a href="LogIn.html" class="primary">Register a Complaint</a>
+    </div>
+  </div>
+
+  <!-- ABOUT -->
+  <section>
+    <h2>About CyberGuard</h2>
+    <p>
+      CyberGuard is designed to act as a digital bridge between citizens and cyber-crime resolution authorities.  
+      It provides a centralized platform where victims of online fraud, hacking, identity theft, and digital abuse can file complaints, receive tracking IDs, and monitor investigation progress in real time.
+      <br><br>
+      The system ensures transparency, accountability, and secure data handling, making the reporting and follow-up process far more reliable than scattered emails, phone calls, or manual tracking.
+    </p>
+  </section>
+
+  <!-- CASE TYPES -->
+  <section>
+    <h2>Types of Complaints You Can Register</h2>
+
+    <div class="case-grid">
+      <div class="case-card">Online fraud & scams</div>
+      <div class="case-card">UPI, bank & payment fraud</div>
+      <div class="case-card">Phishing & fake websites</div>
+      <div class="case-card">Social media account hacking</div>
+      <div class="case-card">Identity theft & impersonation</div>
+      <div class="case-card">Cyber bullying & harassment</div>
+      <div class="case-card">Online blackmail & sextortion</div>
+      <div class="case-card">Malware, spyware & data breaches</div>
+      <div class="case-card">Fake profiles & digital impersonation</div>
+      <div class="case-card">Privacy violations</div>
+    </div>
+  </section>
+
+  <!-- QUICK HELP -->
+  <section>
+    <h2>Quick Help & Official Resources</h2>
+
+    <div class="links-grid">
+      <div class="link-card">
+        <a href="https://cybercrime.gov.in" target="_blank">National Cyber Crime Reporting Portal</a>
+      </div>
+      <div class="link-card">
+        <a href="https://www.cert-in.org.in" target="_blank">CERT-In (Indian Computer Emergency Response Team)</a>
+      </div>
+      <div class="link-card">
+        <a href="https://www.meity.gov.in" target="_blank">Ministry of Electronics & Information Technology (MeitY)</a>
+      </div>
+      <div class="link-card">
+        <a href="https://www.mha.gov.in" target="_blank">Ministry of Home Affairs</a>
+      </div>
+    </div>
+
+    <div class="helpline">
+      National Cyber Crime Helpline: 1930
+    </div>
+  </section>
+
+  <footer>
+    © 2026 CyberGuard Project — Digital Grievance & Cybersecurity Platform
+  </footer>
+
+</body>
+</html>

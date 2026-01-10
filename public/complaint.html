@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Add Complaint — CyberGuard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url("background.jpeg");
+      background-size: cover;
+      background-position: center;
+      color: white;
+      overflow: hidden;
+    }
+
+    .header-container {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .logo { width: 50px; height: auto; margin-right: 12px; }
+
+    .main-heading {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      color: #00d4ff; 
+      letter-spacing: 1px;
+      text-shadow: 0 0 10px rgba(0, 212, 255, 0.3);
+    }
+
+    .box {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 16px;
+      width: 460px;
+      box-shadow: 0 25px 35px rgba(0, 0, 0, .35);
+      z-index: 1;
+      position: relative; 
+    }
+
+    h2 { font-family: 'Orbitron', sans-serif; margin-bottom: 10px; color: #38bdf8; }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-top: 6px;
+      background: #ffffff; 
+      color: #333;
+      outline: none;
+    }
+
+    .readonly {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      cursor: not-allowed;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    #submitBtn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+      color: #020617;
+      transition: transform .12s ease;
+    }
+
+    #submitBtn:hover { transform: translateY(-2px); }
+
+    #statusMessage {
+      position: absolute;
+      left: 105%; 
+      top: 50%;
+      transform: translateY(-50%);
+      width: 280px;
+      z-index: 10;
+    }
+
+    /* --- NEW NAVIGATION CONTAINER (BOTTOM-LEFT) --- */
+    .nav-footer {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      gap: 12px;
+      z-index: 100;
+    }
+
+    .corner-btn {
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .corner-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+  </style>
+</head>
+<body>
+  <div class="header-container">
+    <img src="logo.png" alt="Logo" class="logo">
+    <h1 class="main-heading">CyberGuard</h1>
+  </div>
+
+  <div class="box">
+    <h2>Add Complaint</h2>
+    <label>Name</label>
+    <input type="text" id="name" class="readonly" disabled placeholder="Fetching name...">
+    
+    <label>Phone</label>
+    <input type="tel" id="phone" placeholder="Phone number">
+    
+    <label>Email</label>
+    <input type="email" id="email" class="readonly" disabled placeholder="user@email.com">
+    
+    <label>Subject</label>
+    <input type="text" id="subject" placeholder="Short title">
+    
+    <label>Description</label>
+    <textarea id="description" rows="4" placeholder="Explain your issue"></textarea>
+    
+    <button id="submitBtn">Submit Complaint</button>
+
+    <div id="statusMessage"></div>
+  </div>
+
+  <div class="nav-footer">
+    <button id="dashboard-btn" class="corner-btn">← Back to Dashboard</button>
+    <button id="home-btn" class="corner-btn">Back to Home Page →</button>
+  </div>
+
+  <script type="module">
+    import { auth, db } from './main.js?v=2.0';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { handleComplaintSubmission } from './complaint.js?v=2.0';
+
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            document.getElementById("email").value = user.email;
+            
+            try {
+                const userRef = ref(db, 'users/' + user.uid);
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
+                    document.getElementById("name").value = userData.username || "User";
+                } else {
+                    document.getElementById("name").value = "Unknown User";
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                document.getElementById("name").value = "Error Loading Name";
+            }
+        } else {
+            window.location.href = "LogIn.html";
+        }
+    });
+
+    document.getElementById('submitBtn').addEventListener('click', async (e) => {
+        e.preventDefault();
+        await handleComplaintSubmission();
+    });
+
+    document.getElementById('dashboard-btn').addEventListener('click', () => {
+      window.location.href = 'user.html';
+    });
+
+    document.getElementById('home-btn').addEventListener('click', () => {
+      signOut(auth).then(() => { window.location.href = 'index.html'; });
+    });
+  </script>
+</body>
+</html>

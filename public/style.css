@@ -1,0 +1,285 @@
+/* Imports Orbitron and Michroma from Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Michroma&family=Silkscreen&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    
+    /* Background Image with Tint */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('background.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Keeps background still while scrolling */
+    
+    /* Center the form on the screen */
+    height: 100vh;
+    display: flex;
+    flex-direction: column; /* Stacks Header and Form vertically */
+    justify-content: flex-start; /* Aligns content to the top */
+    align-items: flex-start;    /* Aligns content to the left */
+    padding-left: 80px;
+    /* align-items: center;
+    justify-content: center; */
+    overflow: hidden; /* Prevents unwanted scrollbars */
+}
+
+/* Container to hold both Logo and Title */
+.header-container {
+    position: relative;
+    top: 10px;
+    /* Distance from the very top */
+    left: 10px;
+    display: flex;
+    align-items: center;
+    /* Vertically centers text with logo */
+    justify-content: center;
+    /* Centers the whole group on the page */
+    margin-top: 20px;
+    /* Space from top of screen */
+    margin-bottom: 40px;
+    /* Space before the form starts */
+    z-index: 100;
+    /* Ensures it stays above the background */
+}
+
+/* Adjust the Logo Size */
+.logo {
+    width: 60px;
+    /* Change this value to scale your logo */
+    height: auto;
+    margin-right: 15px;
+    /* Gap between logo and "CyberGuard" */
+}
+
+.main-heading {
+    font-family: 'Orbitron', sans-serif;
+    /* Change this to 'Michroma' or 'Silkscreen' to test others */
+    font-size: 2.5rem;
+    /* Shrink or grow text here */
+    color: #00d4ff;
+    /* Your cyan/blue color */
+    /*text-transform: uppercase;*/
+    letter-spacing: 2px;
+    margin: 0;
+    /* Removes default spacing that pushes it away */
+    /* Adds the flickering effect along with any other animations */
+    animation: flicker 1.5s infinite alternate;
+}
+
+/* The Flicker Animation Logic */
+@keyframes flicker {
+
+    0%,
+    18%,
+    22%,
+    25%,
+    53%,
+    57%,
+    100% {
+        text-shadow:
+            0 0 4px #fff,
+            0 0 11px #fff,
+            0 0 19px #fff,
+            0 0 40px #00d4ff,
+            0 0 80px #00d4ff;
+        opacity: 1;
+    }
+
+    20%,
+    24%,
+    55% {
+        /* These percentages represent the "blinks" where the light goes out */
+        text-shadow: none;
+        opacity: 0.4;
+    }
+}
+
+.form {
+    width: 400px;
+    border-radius: 5px;
+    background-color: rgba(255, 255, 255, 0.5);
+    opacity: 01;
+    margin-left: 0;
+    padding: 5px 10px;
+}
+
+label {
+    display: block;
+    font-weight: bolder;
+    margin: 5px 0px;
+}
+
+input {
+    width: 100%;
+    padding: 8px 5px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+#submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.5);
+    width: 100%;
+    padding: 10px 8px;
+    color: rgb(0, 0, 0);
+    font-weight: bolder;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin: 9px 0px;
+}
+
+#home-btn {
+    border: none;
+    background-color: transparent;
+    color: rgba(71, 28, 230, 0.712);
+    font-weight: bolder;
+    cursor: pointer;
+    padding: 10px 20px;
+    border-radius: 5px;
+
+    /* Positioning Logic: Centered block layout */
+    position: relative;
+    display: block;
+    margin: 20px auto 0 auto;
+    text-align: center;
+    width: fit-content;
+    font-size: 0.85rem;
+    opacity: 0.8;
+    text-decoration: none;
+    z-index: 100;
+}
+
+#home-btn:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+p {
+    font-size: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: inline-block;
+}
+
+a {
+    text-decoration: none;
+    font-weight: bolder;
+    color: rgba(71, 28, 230, 0.712);
+}
+
+/* Password Toggle Styling */
+.pass-container {
+    position: relative;
+    width: 100%;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-80%);
+    cursor: pointer;
+    user-select: none;
+    font-size: 0.8rem;
+    font-weight: 900;
+    user-select: none;
+    color: rgba(71, 28, 230, 0.712);
+    text-transform: uppercase;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 2px 5px;
+    border-radius: 3px;
+}
+
+#password {
+    padding-right: 60px; 
+}
+
+/* Loading Spinner Styling */
+.spinner {
+    display: none; /* Hidden by default */
+    width: 18px;
+    height: 18px;
+    border: 3px solid rgba(0, 0, 0, 0.3);
+    border-radius: 50%;
+    border-top-color: #000;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* --- Registration Modal Styles --- */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: none; /* Controlled by JS */
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 450px;
+    color: #000;
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.5);
+}
+
+.modal-content h3 {
+    font-family: 'Orbitron', sans-serif;
+    color: #00d4ff;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.instruction-text {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.instruction-text p {
+    margin: 10px 0;
+    display: block;
+}
+
+.instruction-text ul {
+    margin-left: 20px;
+    margin-bottom: 15px;
+}
+
+.modal-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #00d4ff;
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+}
+
+.modal-btn:hover {
+    background-color: #008fb3;
+}

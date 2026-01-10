@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberGuard — Admin Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  
+  <style>
+    /* STYLES FROM admin-login.html */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Inter', sans-serif;
+      background-image: linear-gradient(rgba(0,0,0,.8), rgba(0,0,0,.8)), url("background.jpeg");
+      background-size: cover;
+      background-position: center;
+      color: #e5f7ff;
+    }
+
+    /* BRANDING POSITIONING */
+    .header-container {
+      position: fixed;
+      top: 30px;
+      left: 30px;
+      display: flex;
+      align-items: center;
+    }
+    .logo { width: 50px; height: auto; margin-right: 15px; }
+    .main-heading { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: #38bdf8; }
+
+    /* LOGIN BOX LAYOUT */
+    .box {
+      width: 100%;
+      max-width: 420px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: 30px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    h2 { font-family: 'Orbitron', sans-serif; color: #facc15; text-align: center; margin-bottom: 8px; }
+    .warning { text-align: center; font-size: .8rem; opacity: 0.7; margin-bottom: 20px; }
+
+    label { display: block; margin-top: 15px; font-weight: 600; font-size: .9rem; color: #38bdf8; }
+    
+    /* Input and Password Container Logic */
+    .pass-container {
+      position: relative;
+      width: 100%;
+    }
+
+    input {
+      width: 100%; margin-top: 8px; padding: 12px; border-radius: 10px;
+      border: 1px solid rgba(255,255,255,.2); background: rgba(255,255,255,.08); color: white;
+      outline: none;
+    }
+    input:focus { border-color: #facc15; }
+
+    /* Password Toggler Styling */
+    .toggle-password {
+      position: absolute;
+      right: 15px;
+      top: calc(50% + 4px);
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 0.7rem;
+      font-weight: 900;
+      color: #7dd3fc;
+      text-transform: uppercase;
+      user-select: none;
+      z-index: 10;
+    }
+
+    /* Loading Spinner Styling */
+    .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 3px solid rgba(0, 0, 0, 0.2);
+      border-radius: 50%;
+      border-top-color: #020617;
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 10px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    button#admin-submit-btn {
+      width: 100%; margin-top: 25px; padding: 14px; border-radius: 12px; border: none;
+      font-weight: 700; font-family: 'Orbitron', sans-serif; cursor: pointer; 
+      background: linear-gradient(135deg, #facc15, #eab308); color: #020617; 
+      transition: transform .15s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    button#admin-submit-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(250, 204, 21, 0.3); }
+
+    .back-home {
+      margin-top: 20px;
+      display: block;
+      text-align: center;
+      color: #7dd3fc;
+      font-size: .85rem;
+      text-decoration: none;
+      cursor: pointer;
+      opacity: 0.8;
+    }
+    .back-home:hover { opacity: 1; text-decoration: underline; }
+  </style>
+</head>
+
+<body>
+  <div class="header-container">
+    <img src="logo.png" alt="Logo" class="logo">
+    <h1 class="main-heading">CyberGuard</h1>
+  </div>
+
+  <div class="box">
+    <h2>Admin Access</h2>
+    <p class="warning">Restricted area. Unauthorized access is prohibited.</p>
+
+    <label>Admin Email</label>
+    <input type="email" id="email" placeholder="admin@cyberguard.gov" />
+
+    <label>Password</label>
+    <div class="pass-container">
+      <input type="password" id="password" placeholder="••••••••" />
+      <span class="toggle-password" id="togglePassword">SHOW</span>
+    </div>
+
+    <div style="text-align: right; margin-top: 10px;">
+      <a href="#" id="forgot-password-btn" style="color: #7dd3fc; font-size: 0.8rem; text-decoration: none; opacity: 0.8;">Forgot Password?</a>
+    </div>
+
+    <button id="admin-submit-btn">
+      <div class="spinner" id="loader"></div>
+      <span id="btn-text">PROCEED TO DASHBOARD</span>
+    </button>
+
+    <span class="back-home" id="home-btn">← Back to Home Page</span>
+  </div>
+
+  <script type="module">
+    import { auth, db } from "./main.js";
+    import { signInWithEmailAndPassword, signOut, setPersistence, browserSessionPersistence, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // Helper function for Loading State
+    const setLoading = (isLoading) => {
+      const btn = document.getElementById("admin-submit-btn");
+      const loader = document.getElementById("loader");
+      const btnText = document.getElementById("btn-text");
+      if (btn && loader && btnText) {
+        btn.disabled = isLoading;
+        loader.style.display = isLoading ? "block" : "none";
+        btnText.style.opacity = isLoading ? "0.7" : "1";
+      }
+    };
+
+    // Password Toggle Logic
+    const toggleBtn = document.getElementById("togglePassword");
+    const passwordInput = document.getElementById("password");
+    if (toggleBtn && passwordInput) {
+      toggleBtn.onclick = () => {
+        const isPassword = passwordInput.getAttribute("type") === "password";
+        passwordInput.setAttribute("type", isPassword ? "text" : "password");
+        toggleBtn.textContent = isPassword ? "HIDE" : "SHOW";
+      };
+    }
+
+    // LOGIC FOR SIGN IN + ROLE CHECK
+    document.getElementById("admin-submit-btn").onclick = async () => {
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+
+      if (!email || !password) {
+        alert("Please provide both credentials.");
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        await setPersistence(auth, browserSessionPersistence);
+        const cred = await signInWithEmailAndPassword(auth, email, password);
+        
+        // STRICT ROLE CONSTRAINT
+        const snap = await get(ref(db, 'users/' + cred.user.uid));
+        if (snap.exists() && snap.val().role === "admin") {
+          window.location.href = "AdminDashboard.html";
+        } else {
+          await signOut(auth);
+          setLoading(false);
+          alert("Unauthorized: Only users with 'admin' role can access this panel.");
+        }
+      } catch (error) {
+        setLoading(false);
+        alert("Login failed: " + error.message);
+      }
+    };
+
+    // Forgot Password Logic
+    document.getElementById("forgot-password-btn").onclick = (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      if (!email) {
+        alert("Please enter your admin email first.");
+        return;
+      }
+      sendPasswordResetEmail(auth, email)
+        .then(() => alert("If an account is associated with this email, a reset link has been sent. Please check your INBOX or SPAM folder."))
+        .catch((err) => {
+          if (err.code === 'auth/invalid-email') {
+            alert("The email address format is invalid.");
+          } else {
+            alert("An error occurred: " + err.message);
+          }
+        });
+    };
+
+    document.getElementById("home-btn").onclick = () => {
+        signOut(auth).then(() => { window.location.href = "index.html"; });
+    };
+  </script>
+
+  <script>
+    window.addEventListener('pageshow', (event) => {
+      const emailField = document.getElementById('email');
+      const passwordField = document.getElementById('password');
+      if (emailField) emailField.value = '';
+      if (passwordField) passwordField.value = '';
+    });
+  </script>
+</body>
+</html>

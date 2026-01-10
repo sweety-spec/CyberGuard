@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>CyberGuard | Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+  <script type="text/javascript">
+    (function(){
+      // Using your Public Key from email.txt
+      emailjs.init("FOXpCiZjiH8eCSc00"); 
+    })();
+  </script>
+
+  <style>
+    /* ALL STYLES PRESERVED EXACTLY */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      font-family: 'Inter', sans-serif;
+      background-image: linear-gradient(rgba(0, 0, 0, 0.85), rgba(0, 0, 0, 0.85)), url("background.jpeg");
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      color: #e5f7ff;
+    }
+    .top-bar-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 90px; 
+      background: rgba(2, 6, 23, 0.4); backdrop-filter: blur(15px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1); z-index: 90; 
+    }
+    .header-container { position: fixed; top: 20px; left: 20px; display: flex; align-items: center; z-index: 100; }
+    .logo { width: 50px; height: auto; margin-right: 12px; }
+    .main-heading { font-family: 'Orbitron', sans-serif; font-size: 1.8rem; color: #00d4ff; letter-spacing: 1px; }
+    .top-right-nav { position: fixed; top: 15px; right: 20px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; z-index: 100; }
+    .user-info-row { display: flex; align-items: center; gap: 12px; }
+    .user-badge { background: rgba(255, 255, 255, 0.1); padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.2); font-size: 0.9rem; }
+    .username { color: #38bdf8; font-weight: 700; }
+    #logoutBtn { background: #ef4444; color: white; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+    .nav-buttons-row { display: flex; gap: 10px; }
+    .nav-link-btn { background: rgba(255, 255, 255, 0.1); color: white; border: 1px solid rgba(255, 255, 255, 0.2); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: 600; transition: background 0.3s; white-space: nowrap; }
+    .container { margin-top: 130px; padding: 20px 40px; width: 100%; max-width: 1400px; align-self: center; }
+    .platform-subtitle { color: #7dd3fc; font-weight: 700; font-size: 0.9rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+    .container h1 { margin-bottom: 25px; font-family: 'Orbitron', sans-serif; color: #38bdf8; }
+    .toolbar { display: flex; gap: 15px; margin-bottom: 25px; flex-wrap: wrap; align-items: center; }
+    input, select, textarea { padding: 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.2); background: rgba(15, 23, 42, 0.8); color: white; font-size: 14px; width: 100%; }
+    input { width: 260px; }
+    #filterStatus, #sortOrder { background-color: #38bdf8; color: black; font-weight: 700; cursor: pointer; width: auto; }
+    .download-excel-btn { background: #22c55e; color: #052e16; border: none; padding: 10px 18px; border-radius: 8px; font-weight: 700; cursor: pointer; font-size: 14px; }
+    .table-wrapper { background: rgba(2, 6, 23, 0.7); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 12px; overflow-x: auto; backdrop-filter: blur(10px); }
+    table { width: 100%; border-collapse: collapse; min-width: 1100px; }
+    th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+    th { color: #7dd3fc; font-family: 'Orbitron'; font-size: 0.75rem; background: rgba(15, 23, 42, 1); white-space: nowrap; }
+    .user-cell { font-size: 0.85rem; line-height: 1.4; }
+    .user-cell span { display: block; opacity: 0.7; font-size: 0.75rem; }
+    .status-pill { padding: 4px 10px; border-radius: 20px; font-size: .7rem; font-weight: 800; text-transform: uppercase; display: inline-block; min-width: 85px; text-align: center; color: #020617; }
+    .pending { background: #facc15 !important; }
+    .review  { background: #38bdf8 !important; }
+    .resolved{ background: #22c55e !important; }
+    .closed  { background: #f87171 !important; }
+    .action-btn { padding: 6px 12px; border-radius: 8px; border: none; font-weight: 800; cursor: pointer; font-size: .7rem; transition: 0.2s; }
+    .view-btn { background: #38bdf8; color: #020617; }
+    .update-btn { background: #22c55e; color: #020617; }
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .modal-content { background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 15px; width: 90%; max-width: 700px; padding: 40px; position: relative; max-height: 85vh; overflow-y: auto; color: #e5f7ff; }
+    .close-modal { position: absolute; top: 20px; right: 25px; font-size: 1.8rem; cursor: pointer; color: #38bdf8; z-index: 10; }
+    .log-entry { border-left: 2px solid #38bdf8; padding-left: 15px; margin-bottom: 15px; }
+    .pdf-download-btn, .save-update-btn { margin-top: 20px; width: 100%; padding: 12px; background: #22c55e; color: #052e16; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+    footer { text-align: center; padding: 40px 20px; font-size: 13px; color: #94a3b8; }
+  </style>
+</head>
+
+<body>
+  <div class="top-bar-overlay"></div>
+  <div class="header-container">
+    <img src="logo.png" alt="Logo" class="logo">
+    <h1 class="main-heading">CyberGuard</h1>
+  </div>
+
+  <div class="top-right-nav">
+    <div class="user-info-row">
+      <div class="user-badge">Welcome, <span id="userNameDisplay" class="username">Admin</span></div>
+      <button id="logoutBtn">Logout</button>
+    </div>
+    <div class="nav-buttons-row">
+      <button id="login-btn" class="nav-link-btn">Back to Admin Login</button>
+      <button id="home-btn" class="nav-link-btn">Back to Home Page</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <p class="platform-subtitle">Centralized Platform for Cyber Crime Management and Prevention</p>
+    <h1>Admin: Case Management</h1>
+
+    <div class="toolbar">
+      <input type="text" id="searchInput" placeholder="Search by Case, User or Subject" />
+      <select id="filterStatus">
+        <option value="all">All Statuses</option>
+        <option value="Pending">Pending</option>
+        <option value="In Review">In Review</option>
+        <option value="Resolved">Resolved</option>
+        <option value="Closed">Closed</option>
+      </select>
+      <select id="sortOrder">
+        <option value="desc">Latest Action First</option>
+        <option value="asc">Oldest Action First</option>
+      </select>
+      <button class="download-excel-btn" id="exportExcelBtn">Download All Cases (Excel)</button>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Case ID</th>
+            <th>Reporting User</th>
+            <th>Subject</th>
+            <th>Last Action</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="casesTableBody">
+          <tr><td colspan="6" style="text-align:center;">Initializing Secure Access...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content" id="printableReport">
+      <span class="close-modal" id="closeModal">&times;</span>
+      <div class="pdf-header" style="display:flex; align-items:center; gap:15px; margin-bottom:25px; border-bottom:1px solid rgba(56,189,248,0.2); padding-bottom:20px;">
+        <img src="logo.png" alt="Logo" style="width: 55px; height: 55px;">
+        <div>
+          <h1 style="font-family: 'Orbitron'; color: #38bdf8; font-size: 22px; margin: 0;">CYBERGUARD</h1>
+          <p style="font-size: 10px; color: #7dd3fc; letter-spacing: 2px;">OFFICIAL INVESTIGATION REPORT</p>
+        </div>
+      </div>
+      <p id="modalCaseId" class="case-id-text" style="color:#38bdf8; font-family:'Orbitron'; font-size:0.8rem;"></p>
+      <h2 id="modalSubject" style="margin: 15px 0; color: white;"></h2>
+      <div id="modalInfoGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 0.9rem; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 10px;"></div>
+      <div style="margin-top: 20px;">
+        <h4 style="color: #38bdf8; font-family:'Orbitron'; font-size:0.75rem; margin-bottom:10px;">DESCRIPTION</h4>
+        <p id="modalDesc" style="font-size: 0.9rem; line-height: 1.6; opacity: 0.95; white-space: pre-wrap; word-wrap: break-word;"></p>
+      </div>
+      <div style="margin-top: 20px;">
+        <h4 style="color: #38bdf8; font-family:'Orbitron'; font-size:0.75rem; margin-bottom:10px;">ACTIVITY LOGS</h4>
+        <div id="modalLogs"></div>
+      </div>
+      <button class="pdf-download-btn" id="generatePdf">Download Report as PDF</button>
+    </div>
+  </div>
+
+  <div class="modal-overlay" id="updateModalOverlay">
+    <div class="modal-content">
+      <span class="close-modal" id="closeUpdateModal">&times;</span>
+      <h2 style="font-family: 'Orbitron'; color: #38bdf8; margin-bottom: 20px;">Update Case Details</h2>
+      <div id="updateModalCaseInfo" style="font-size: 0.85rem; margin-bottom: 20px; line-height: 1.6; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;"></div>
+      <label style="font-size: 0.75rem; color: #7dd3fc; font-weight: 600; display: block; margin-bottom: 8px;">CHANGE STATUS</label>
+      <select id="updateStatusSelect" style="margin-bottom: 20px;">
+        <option value="Pending">Pending</option>
+        <option value="In Review">In Review</option>
+        <option value="Resolved">Resolved</option>
+        <option value="Closed">Closed</option>
+      </select>
+      <label style="font-size: 0.75rem; color: #7dd3fc; font-weight: 600; display: block; margin-bottom: 8px;">ADMIN REMARKS (OPTIONAL)</label>
+      <textarea id="adminRemarkInput" rows="4" placeholder="Enter investigation notes or updates..."></textarea>
+      <button class="save-update-btn" id="saveUpdateBtn">Commit Update</button>
+    </div>
+  </div>
+
+  <footer>© 2026 CyberGuard Project | Authorized Personnel Only</footer>
+
+  <script type="module">
+    import { auth, db } from "./main.js";
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { ref, get, update, push } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    const tableBody = document.getElementById("casesTableBody");
+    const nameDisplay = document.getElementById("userNameDisplay");
+    let allCases = [];
+    let currentAdmin = null;
+    let selectedUpdateCaseId = null;
+
+    function formatDateTime(ts) {
+      if (!ts) return "N/A";
+      const date = new Date(ts);
+      if (isNaN(date.getTime())) return ts; 
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      const hours = String(date.getHours()).padStart(2, '0');
+      const mins = String(date.getMinutes()).padStart(2, '0');
+      const secs = String(date.getSeconds()).padStart(2, '0');
+      return `${day}/${month}/${year} | ${hours}:${mins}:${secs}`;
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { window.location.href = "admin-login.html"; return; }
+      const snap = await get(ref(db, "users/" + user.uid));
+      if (!snap.exists() || snap.val().role !== "admin") {
+        await signOut(auth);
+        window.location.href = "admin-login.html";
+        return;
+      }
+      // CRITICAL FIX: Storing Admin Email from Auth user
+      currentAdmin = { ...snap.val(), email: user.email };
+      nameDisplay.innerText = currentAdmin.username || "Admin";
+      loadComplaints();
+    });
+
+    const logoutAndRedirect = (url) => signOut(auth).then(() => { window.location.href = url; });
+    document.getElementById('logoutBtn').onclick = () => logoutAndRedirect("admin-login.html");
+    document.getElementById('login-btn').onclick = () => logoutAndRedirect("admin-login.html");
+    document.getElementById('home-btn').onclick = () => logoutAndRedirect("index.html");
+
+    async function loadComplaints() {
+      const snap = await get(ref(db, "cases"));
+      allCases = [];
+      if (!snap.exists()) { tableBody.innerHTML = "<tr><td colspan='6'>No complaints found.</td></tr>"; return; }
+      snap.forEach(child => {
+        const data = child.val();
+        let lastActionStr = data.timestamp;
+        if (data.logs) {
+           const logsArr = Object.values(data.logs);
+           const lastLog = logsArr[logsArr.length - 1];
+           if (lastLog && lastLog.time) lastActionStr = lastLog.time;
+        }
+        allCases.push({ key: child.key, ...data, lastActionTs: lastActionStr });
+      });
+      applyFilterAndSort();
+    }
+
+    function applyFilterAndSort() {
+      const filter = document.getElementById("filterStatus").value;
+      const order = document.getElementById("sortOrder").value;
+      const search = document.getElementById("searchInput").value.toLowerCase().trim();
+      let filtered = allCases.filter(c => {
+        const matchSearch = c.key.toLowerCase().includes(search) || 
+                            (c.subject && c.subject.toLowerCase().includes(search)) ||
+                            (c.userName && c.userName.toLowerCase().includes(search)) ||
+                            (c.userEmail && c.userEmail.toLowerCase().includes(search));
+        return (filter === "all" || c.status === filter) && matchSearch;
+      });
+      filtered.sort((a, b) => {
+          const parseDate = (s) => {
+              if(!s || !s.includes('|')) return new Date(0);
+              const [d, t] = s.split(' | ');
+              const [day, month, year] = d.split('/');
+              return new Date(`${year}-${month}-${day}T${t}`);
+          };
+          const dateA = parseDate(a.lastActionTs);
+          const dateB = parseDate(b.lastActionTs);
+          return order === "asc" ? dateA - dateB : dateB - dateA;
+      });
+      renderTable(filtered);
+    }
+
+    function renderTable(cases) {
+      tableBody.innerHTML = "";
+      cases.forEach(c => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td style="font-family:'Orbitron'; color:#38bdf8; font-size:0.75rem;">${c.key}</td>
+          <td class="user-cell">
+            <strong>${c.userName || 'Anonymous'}</strong>
+            <span>${c.userEmail || 'No Email'}</span>
+            <span>${c.userPhone || 'No Phone'}</span>
+          </td>
+          <td>${c.subject}</td>
+          <td style="font-size:0.8rem; opacity:0.8;">${formatDateTime(c.lastActionTs)}</td>
+          <td><span class="status-pill ${getStatusClass(c.status)}">${c.status}</span></td>
+          <td>
+            <div style="display:flex; gap:5px;">
+              <button class="action-btn view-btn" onclick="openViewModal('${c.key}')">View</button>
+              <button class="action-btn update-btn" onclick="openUpdateModal('${c.key}')">Update</button>
+            </div>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
+
+    function getStatusClass(s) {
+      const status = s ? s.toLowerCase() : "";
+      if (status === "pending") return "pending";
+      if (status === "in review") return "review";
+      if (status === "resolved") return "resolved";
+      if (status === "closed") return "closed";
+      return "";
+    }
+
+    window.openUpdateModal = (caseId) => {
+      const c = allCases.find(x => x.key === caseId);
+      if(!c) return;
+      selectedUpdateCaseId = caseId;
+      document.getElementById("updateModalCaseInfo").innerHTML = `
+        <p><strong>Case ID:</strong> ${caseId}</p>
+        <p><strong>Subject:</strong> ${c.subject}</p>
+        <p><strong>Reported By:</strong> ${c.userName} (${c.userEmail})</p>
+        <p><strong>Current Status:</strong> <span class="status-pill ${getStatusClass(c.status)}">${c.status}</span></p>
+      `;
+      document.getElementById("updateStatusSelect").value = c.status;
+      document.getElementById("adminRemarkInput").value = "";
+      document.getElementById("updateModalOverlay").style.display = "flex";
+    };
+
+    /**
+     * UPDATED SAVE: FIXES LOGS & SENDS EMAIL
+     */
+    document.getElementById("saveUpdateBtn").onclick = async () => {
+      const newStatus = document.getElementById("updateStatusSelect").value;
+      const remark = document.getElementById("adminRemarkInput").value.trim();
+      const timeStr = formatDateTime(new Date().getTime());
+      
+      const c = allCases.find(x => x.key === selectedUpdateCaseId);
+      const logMsg = remark ? `Status: ${newStatus} | Remark: ${remark}` : `Status changed to ${newStatus}`;
+
+      try {
+        // 1. Database Update
+        await update(ref(db, "cases/" + selectedUpdateCaseId), { status: newStatus });
+        
+        // FIX: Logging admin details properly
+        await push(ref(db, "cases/" + selectedUpdateCaseId + "/logs"), { 
+            time: timeStr, 
+            message: logMsg,
+            adminName: currentAdmin.username,
+            adminEmail: currentAdmin.email
+        });
+
+        // 2. EmailJS Send
+        const emailParams = {
+            to_name: c.userName,
+            to_email: c.userEmail,
+            case_id: selectedUpdateCaseId,
+            status: newStatus,
+            admin_remark: remark || "No Remarks.",
+            subject: c.subject,
+            update_time: timeStr
+        };
+
+        emailjs.send('service_8wqem3h', 'template_em9uree', emailParams)
+          .then(() => console.log('Email Sent Successfully'))
+          .catch((err) => console.error('EmailJS Error:', err));
+
+        document.getElementById("updateModalOverlay").style.display = "none";
+        alert("Case Updated & Email Sent!");
+        loadComplaints();
+      } catch (err) { alert("Update failed."); }
+    };
+
+    window.openViewModal = (caseId) => {
+      const c = allCases.find(x => x.key === caseId);
+      if(!c) return;
+      document.getElementById("modalCaseId").innerText = `CASE ID: ${caseId}`;
+      document.getElementById("modalSubject").innerText = `Subject: ${c.subject || "Untitled"}`;
+      document.getElementById("modalDesc").innerText = c.description || "No description provided.";
+      document.getElementById("modalInfoGrid").innerHTML = `
+        <div><span style="opacity:0.6; font-size:0.7rem;">STATUS</span><br><span class="status-pill ${getStatusClass(c.status)}">${c.status}</span></div>
+        <div><span style="opacity:0.6; font-size:0.7rem;">DATE</span><br><strong>${formatDateTime(c.timestamp)}</strong></div>
+        <div><span style="opacity:0.6; font-size:0.7rem;">USER</span><br><strong>${c.userName}</strong></div>
+        <div><span style="opacity:0.6; font-size:0.7rem;">PHONE</span><br><strong>${c.userPhone || 'N/A'}</strong></div>`;
+      
+      const logBox = document.getElementById("modalLogs");
+      logBox.innerHTML = "";
+      const logs = c.logs ? Object.values(c.logs) : [];
+      logs.forEach(l => {
+          // FIX: Showing Admin Email/Name in Activity Log View
+          const adminInfo = l.adminName ? `<br><small style="color:#22c55e;">Updated by: ${l.adminName} (${l.adminEmail || 'N/A'})</small>` : '';
+          logBox.innerHTML += `<div class="log-entry">
+            <span style="font-size:0.7rem; color:#7dd3fc;">${formatDateTime(l.time)}</span>
+            <p style="font-size:0.8rem;">${l.message}${adminInfo}</p>
+          </div>`;
+      });
+      document.getElementById("modalOverlay").style.display = "flex";
+    };
+
+    document.getElementById("exportExcelBtn").onclick = () => {
+      if (allCases.length === 0) { alert("No data"); return; }
+      let csvContent = "Case ID,User,Subject,Status,Reported At\n";
+      allCases.forEach(c => { csvContent += `${c.key},${c.userName},${c.subject},${c.status},${c.timestamp}\n`; });
+      const blob = new Blob([csvContent], { type: 'text/csv' });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "CyberGuard_All_Cases.csv";
+      link.click();
+    };
+
+    document.getElementById("generatePdf").onclick = async () => {
+      const canvas = await html2canvas(document.getElementById("printableReport"), { backgroundColor: "#0f172a" });
+      const doc = new jspdf.jsPDF('p', 'mm', 'a4');
+      doc.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, 210, (canvas.height * 210) / canvas.width);
+      doc.save(`CyberGuard_Report.pdf`);
+    };
+
+    document.getElementById("closeModal").onclick = () => document.getElementById("modalOverlay").style.display = "none";
+    document.getElementById("closeUpdateModal").onclick = () => document.getElementById("updateModalOverlay").style.display = "none";
+    document.getElementById("filterStatus").onchange = applyFilterAndSort;
+    document.getElementById("sortOrder").onchange = applyFilterAndSort;
+    document.getElementById("searchInput").oninput = applyFilterAndSort;
+  </script>
+</body>
+</html>

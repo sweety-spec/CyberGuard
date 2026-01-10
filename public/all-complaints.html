@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>View All Complaints — CyberGuard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  
+  <style>
+    /* UPDATED LOGO STYLES */
+    .header-container {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      z-index: 100;
+    }
+    .logo { width: 110px; height: auto; } /* Increased size from 50px */
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+      height: 100vh; width: 100vw; overflow: hidden; 
+      font-family: 'Inter', sans-serif;
+      background-image: linear-gradient(rgba(0,0,0,.75), rgba(0,0,0,.75)), url("background.jpeg");
+      background-size: cover; background-position: center;
+      color: #e5f7ff; padding: 40px 24px;
+      display: flex; justify-content: center; align-items: center;
+    }
+
+    .container {
+      width: 100%; max-width: 1000px; height: auto; max-height: 90vh;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px); border-radius: 18px; padding: 22px 26px;
+      display: flex; flex-direction: column;
+      position: relative; z-index: 1;
+    }
+
+    h2 { font-family: 'Orbitron', sans-serif; color: #38bdf8; margin-bottom: 12px; }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .back-btn { color: #7dd3fc; cursor: pointer; font-size: .9rem; text-decoration: none; }
+    
+    .controls { margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; }
+    input, select {
+      padding: 9px 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, .25);
+      background: rgba(15, 23, 42, 0.9); color: white; font-size: 0.9rem; outline: none;
+    }
+
+    .table-wrapper { overflow-y: auto; flex-grow: 1; }
+    table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+    th, td { padding: 12px 10px; border-bottom: 1px solid rgba(255,255,255,.12); text-align: left; }
+    th { color: #7dd3fc; position: sticky; top: 0; background: rgba(15, 23, 42, 1); z-index: 2; }
+    
+    .case-id-text { font-family: 'Orbitron'; font-size: .8rem; color: #38bdf8; }
+    
+    .status-pill { 
+      padding: 4px 10px; border-radius: 20px; font-size: .75rem; 
+      font-weight: 600; text-transform: uppercase; display: inline-block; min-width: 90px; text-align: center;
+    }
+    .pending { background: rgba(250,204,21,.25) !important; color: #facc15 !important; }
+    .review  { background: rgba(56,189,248,.25) !important; color: #38bdf8 !important; }
+    .resolved{ background: rgba(34,197,94,.25) !important; color: #4ade80 !important; }
+    .closed  { background: rgba(239, 68, 68, 0.25) !important; color: #f87171 !important; }
+
+    .view-btn { 
+      padding: 6px 14px; border-radius: 8px; background: #38bdf8; border: none; 
+      color: #020617; font-weight: 700; cursor: pointer; font-size: .75rem; transition: 0.2s; 
+    }
+    .view-btn:hover { background: #7dd3fc; transform: translateY(-1px); }
+
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.92); backdrop-filter: blur(8px);
+      display: none; justify-content: center; align-items: center; z-index: 1000;
+    }
+    .modal-content {
+      background: #0f172a; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 15px;
+      width: 90%; max-width: 650px; padding: 40px; position: relative; max-height: 85vh; overflow-y: auto; color: #e5f7ff;
+    }
+    .close-modal { position: absolute; top: 20px; right: 25px; font-size: 1.8rem; cursor: pointer; color: #38bdf8; z-index: 10; }
+    
+    .pdf-header { display: flex; align-items: center; gap: 15px; margin-bottom: 25px; border-bottom: 1px solid rgba(56, 189, 248, 0.2); padding-bottom: 20px; }
+    .pdf-logo { width: 55px; height: 55px; object-fit: contain; }
+    
+    #modalDesc { font-size: 0.9rem; line-height: 1.6; opacity: 0.95; white-space: pre-wrap; word-wrap: break-word; }
+    .log-entry { border-left: 2px solid #38bdf8; padding-left: 15px; margin-bottom: 15px; }
+    .log-date { font-size: 0.75rem; color: #7dd3fc; font-weight: 600; display: block; }
+
+    .pdf-download-btn {
+      margin-top: 30px; width: 100%; padding: 12px; background: #22c55e; color: #052e16; 
+      border: none; border-radius: 10px; font-weight: 700; cursor: pointer; transition: 0.3s;
+    }
+
+    .pagination { margin-top: 20px; display: flex; gap: 6px; justify-content: center; }
+    .page-btn { padding: 6px 10px; border-radius: 8px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.25); cursor: pointer; color: white; }
+    .page-btn.active { background: #38bdf8; color: #020617; font-weight: 700; }
+  </style>
+</head>
+<body>
+
+  <div class="header-container">
+    <img src="logo.png" alt="Logo" class="logo">
+  </div>
+
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content" id="printableReport">
+      <span class="close-modal" id="closeModal">&times;</span>
+      
+      <div class="pdf-header">
+        <img src="logo.png" alt="Logo" class="pdf-logo">
+        <div>
+          <h1 style="font-family: 'Orbitron'; color: #38bdf8; font-size: 22px; margin: 0;">CYBERGUARD</h1>
+          <p style="font-size: 10px; color: #7dd3fc; letter-spacing: 2px; text-transform: uppercase;">Official Investigation Report</p>
+        </div>
+      </div>
+
+      <p id="modalCaseId" class="case-id-text" style="margin-bottom: 5px; font-size: 0.9rem;"></p>
+      <h2 id="modalSubject" style="font-size: 1.4rem; margin-bottom: 20px; color: white;"></h2>
+      
+      <div id="modalInfoGrid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; font-size: 0.9rem; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 10px;"></div>
+
+      <div style="margin-top: 20px;">
+        <h4 style="color: #38bdf8; font-family: 'Orbitron'; font-size: 0.8rem; margin-bottom: 8px;">DESCRIPTION</h4>
+        <p id="modalDesc"></p>
+      </div>
+
+      <div style="margin-top: 25px;">
+        <h4 style="color: #38bdf8; font-family: 'Orbitron'; font-size: 0.8rem; margin-bottom: 15px;">ACTIVITY LOGS</h4>
+        <div id="modalLogs"></div>
+      </div>
+
+      <button class="pdf-download-btn" id="generatePdf">Download Report as PDF</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="top-bar">
+      <h2>All Complaints</h2>
+      <a href="user.html" class="back-btn">← Back to Dashboard</a>
+    </div>
+
+    <div class="controls">
+      <input id="searchInput" placeholder="Search by subject or ID..." style="flex: 2;" />
+      <select id="statusFilter" style="flex: 1;">
+        <option value="all">All Statuses</option>
+        <option value="Pending">Pending</option>
+        <option value="In Review">In Review</option>
+        <option value="Resolved">Resolved</option>
+        <option value="Closed">Closed</option>
+      </select>
+      <select id="sortSelect" style="flex: 1;">
+        <option value="newest">Sort: Newest</option>
+        <option value="oldest">Sort: Oldest</option>
+      </select>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Case ID</th>
+            <th>Subject</th>
+            <th>Status</th>
+            <th>Timestamp</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="5" style="text-align:center; padding: 40px; opacity: 0.5;">Loading records...</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="pagination" id="pagination"></div>
+  </div>
+
+  <script type="module">
+    import { auth, db } from './main.js';
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { ref, get, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    let allComplaints = [];
+    let currentPage = 1;
+    const pageSize = 6;
+
+    const tableBody = document.getElementById("tableBody");
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+    const sortSelect = document.getElementById("sortSelect");
+    const pagination = document.getElementById("pagination");
+    const modal = document.getElementById("modalOverlay");
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) { fetchAllComplaints(user.email); } 
+      else { window.location.href = "LogIn.html"; }
+    });
+
+    async function fetchAllComplaints(email) {
+      const q = query(ref(db, 'cases'), orderByChild('userEmail'), equalTo(email));
+      try {
+        const snap = await get(q);
+        if (snap.exists()) {
+          allComplaints = [];
+          snap.forEach(child => {
+            const data = child.val();
+            data.fbKey = child.key;
+            data.displayTimestamp = data.timestamp || "No Time Available"; 
+            allComplaints.push(data);
+          });
+          renderTable();
+        } else {
+          tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; opacity: 0.5;">No complaints found.</td></tr>`;
+        }
+      } catch (err) {
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px;">Error connecting to database.</td></tr>`;
+      }
+    }
+
+    function renderTable() {
+      let filtered = [...allComplaints];
+      const searchQ = searchInput.value.toLowerCase();
+      if (searchQ) {
+        filtered = filtered.filter(c => c.caseId.toLowerCase().includes(searchQ) || (c.subject && c.subject.toLowerCase().includes(searchQ)));
+      }
+      if (statusFilter.value !== "all") { filtered = filtered.filter(c => c.status === statusFilter.value); }
+
+      if (sortSelect.value === "newest") { filtered.sort((a, b) => b.caseId.localeCompare(a.caseId)); } 
+      else { filtered.sort((a, b) => a.caseId.localeCompare(b.caseId)); }
+
+      const totalPages = Math.ceil(filtered.length / pageSize);
+      const start = (currentPage - 1) * pageSize;
+      const pageItems = filtered.slice(start, start + pageSize);
+
+      if (pageItems.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 40px; opacity: 0.5;">No matching records.</td></tr>`;
+      } else {
+        tableBody.innerHTML = pageItems.map(c => `
+          <tr>
+            <td class="case-id-text">${c.caseId}</td>
+            <td>${c.subject || 'No Subject'}</td>
+            <td><span class="status-pill ${getStatusClass(c.status)}">${c.status}</span></td>
+            <td>${c.displayTimestamp}</td>
+            <td><button class="view-btn" onclick="window.showCaseDetail('${c.fbKey}')">View</button></td>
+          </tr>
+        `).join("");
+      }
+      renderPagination(totalPages);
+    }
+
+    window.showCaseDetail = function(key) {
+      const c = allComplaints.find(item => item.fbKey === key);
+      if(!c) return;
+      document.getElementById("modalCaseId").innerText = `CASE ID: ${c.caseId}`;
+      document.getElementById("modalSubject").innerText = `Subject: ${c.subject || "Untitled"}`;
+      document.getElementById("modalDesc").innerText = c.description || "No description provided.";
+      
+      document.getElementById("modalInfoGrid").innerHTML = `
+        <div><span style="opacity:0.6; font-size:0.75rem;">STATUS</span><br><span class="status-pill ${getStatusClass(c.status)}">${c.status}</span></div>
+        <div><span style="opacity:0.6; font-size:0.75rem;">DATE & TIME OF REPORTING</span><br><strong>${c.displayTimestamp}</strong></div>`;
+      
+      const logContainer = document.getElementById("modalLogs");
+      logContainer.innerHTML = "";
+      const logs = c.logs ? (Array.isArray(c.logs) ? c.logs : Object.values(c.logs)) : [];
+      if(logs.length > 0) {
+        logs.forEach(l => { 
+          // Show admin details if they exist in the log entry
+          const adminInfo = l.adminName ? `<br><small style="color:#4ade80;">Updated by: ${l.adminName} (${l.adminEmail || ''})</small>` : '';
+          
+          logContainer.innerHTML += `
+            <div class="log-entry">
+              <span class="log-date">${l.time || ''}${adminInfo}</span>
+              <p style="font-size:0.85rem;">${l.message}</p>
+            </div>`; 
+        });
+      } else { logContainer.innerHTML = "<p style='opacity:0.5; font-size:0.8rem;'>No logs found.</p>"; }
+      modal.style.display = "flex";
+    };
+
+    document.getElementById("generatePdf").onclick = async () => {
+      const { jsPDF } = window.jspdf;
+      const btn = document.getElementById("generatePdf");
+      const close = document.getElementById("closeModal");
+      btn.style.visibility = "hidden"; close.style.visibility = "hidden";
+
+      const canvas = await html2canvas(document.getElementById("printableReport"), { 
+        backgroundColor: "#0f172a", 
+        scale: 2,
+        useCORS: true
+      });
+      
+      const doc = new jsPDF('p', 'mm', 'a4');
+      const pdfWidth = doc.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+      doc.setFillColor(15, 23, 42); doc.rect(0, 0, 210, 297, 'F'); 
+      doc.addImage(canvas.toDataURL('image/png'), 'PNG', 0, 0, pdfWidth, pdfHeight);
+      doc.save(`Report_${document.getElementById("modalCaseId").innerText.replace("CASE ID: ","")}.pdf`);
+      
+      btn.style.visibility = "visible"; close.style.visibility = "visible";
+    };
+
+    document.getElementById("closeModal").onclick = () => modal.style.display = "none";
+    window.onclick = (e) => { if(e.target == modal) modal.style.display = "none"; };
+
+    function getStatusClass(status) {
+      const s = status ? status.toLowerCase() : "";
+      if (s === "pending") return "pending";
+      if (s === "in review") return "review";
+      if (s === "resolved") return "resolved";
+      if (s === "closed") return "closed";
+      return "";
+    }
+
+    function renderPagination(totalPages) {
+      pagination.innerHTML = "";
+      if (totalPages <= 1) return;
+      for (let i = 1; i <= totalPages; i++) {
+        const btn = document.createElement("button");
+        btn.className = "page-btn" + (i === currentPage ? " active" : "");
+        btn.innerText = i;
+        btn.onclick = () => { currentPage = i; renderTable(); };
+        pagination.appendChild(btn);
+      }
+    }
+
+    searchInput.addEventListener("input", () => { currentPage = 1; renderTable(); });
+    statusFilter.addEventListener("change", () => { currentPage = 1; renderTable(); });
+    sortSelect.addEventListener("change", renderTable);
+  </script>
+</body>
+</html>

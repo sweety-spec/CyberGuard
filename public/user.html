@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CyberGuard — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;600&display=swap"
+    rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Inter', sans-serif;
+      background-image: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url("background.jpeg");
+      background-size: cover;
+      background-position: center;
+      color: #e5f7ff;
+      overflow: hidden;
+    }
+
+    /* Top Left Logo/Title */
+    .header-container {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .logo {
+      width: 50px;
+      height: auto;
+      margin-right: 12px;
+    }
+
+    .main-heading {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.8rem;
+      color: #00d4ff;
+      letter-spacing: 1px;
+    }
+
+    /* Top Right User Info */
+    .top-right-nav {
+      position: fixed;
+      top: 20px;
+      right: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 10px;
+      z-index: 100;
+    }
+
+    .user-badge {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 8px 16px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 0.95rem;
+      backdrop-filter: blur(5px);
+    }
+
+    .username {
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    #logoutBtn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    #logoutBtn:hover {
+      background: #dc2626;
+    }
+
+    /* The Main Dashboard Box */
+    .dashboard-card {
+      width: 92%;
+      max-width: 780px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(10px);
+      border-radius: 18px;
+      padding: 30px;
+      z-index: 1;
+    }
+
+    h2 {
+      font-family: 'Orbitron', sans-serif;
+      color: #38bdf8;
+      margin-bottom: 20px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+      justify-content: flex-start;
+    }
+
+    .btn {
+      text-decoration: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.92rem;
+      color: #020617;
+      transition: transform 0.15s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .primary {
+      background: #38bdf8;
+    }
+
+    .secondary {
+      background: #94a3b8;
+    }
+
+    .tertiary {
+      background: #facc15;
+    }
+
+    .section-title {
+      margin-top: 14px;
+      margin-bottom: 10px;
+      font-weight: 700;
+      font-size: .95rem;
+      color: #7dd3fc;
+      text-align: left;
+    }
+
+    /* History List Styling */
+    .history-section {
+      max-height: 220px;
+      overflow-y: auto;
+      text-align: left;
+    }
+
+    .case-item {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 12px;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    .case-id {
+      font-family: 'Orbitron';
+      font-size: 0.8rem;
+      color: #38bdf8;
+    }
+
+    .history-section::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .history-section::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.3);
+      border-radius: 10px;
+    }
+
+    /* --- SHIFTED NAVIGATION BUTTONS START --- */
+    .nav-footer {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 15px; /* Spacing between buttons */
+      z-index: 100;
+    }
+
+    .corner-btn {
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.15);
+      color: white;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: background 0.3s;
+      z-index: 100;
+      text-decoration: none;
+      white-space: nowrap; /* Keeps text on one line */
+    }
+
+    .corner-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+    /* --- SHIFTED NAVIGATION BUTTONS END --- */
+  </style>
+</head>
+
+<body>
+
+  <div class="header-container">
+    <img src="logo.png" alt="Logo" class="logo">
+    <h1 class="main-heading">CyberGuard</h1>
+  </div>
+
+  <div class="top-right-nav">
+    <div class="user-badge">Welcome, <span id="userName" class="username">...</span></div>
+    <button id="logoutBtn">Logout</button>
+  </div>
+
+  <div class="dashboard-card">
+    <h2>Complaint Dashboard</h2>
+
+    <div class="btn-group">
+      <a href="complaint.html" class="btn primary">Add New Complaint</a>
+      <a href="track.html" class="btn secondary">Track Complaint (ID)</a>
+      <a href="all-complaints.html" class="btn tertiary">View All Complaints</a>
+    </div>
+
+    <div class="section-title">Recent Activity (last few only)</div>
+    <div class="history-section" id="caseList">
+      <p style="opacity:0.7">Loading history...</p>
+    </div>
+  </div>
+
+  <div class="nav-footer">
+    <button id="login-btn" class="corner-btn">← Back to Login</button>
+    <button id="home-btn" class="corner-btn">Back to Home Page →</button>
+  </div>
+
+  <script type="module">
+    import { auth, db } from './main.js?v=1.2';
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { ref, get, query, orderByChild, equalTo, limitToLast } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        get(ref(db, 'users/' + user.uid)).then((snapshot) => {
+          if (snapshot.exists()) {
+            document.getElementById('userName').innerText = snapshot.val().username;
+          }
+        });
+        fetchHistory(user.email);
+      } else {
+        window.location.href = "LogIn.html";
+      }
+    });
+
+    async function fetchHistory(email) {
+      const list = document.getElementById('caseList');
+      const q = query(
+        ref(db, 'cases'),
+        orderByChild('userEmail'),
+        equalTo(email),
+        limitToLast(3));
+
+      try {
+        const snap = await get(q);
+        if (snap.exists()) {
+          list.innerHTML = "";
+          snap.forEach(child => {
+            const data = child.val();
+            list.innerHTML += `
+              <div class="case-item">
+                <div class="case-id">${data.caseId}</div>
+                <div style="font-size:0.9rem; margin-top:4px;"><strong>Subject:</strong> ${data.subject}</div>
+                <div style="font-size:0.85rem; opacity:0.9"><strong>Status:</strong> ${data.status}</div>
+              </div>`;
+          });
+        } else {
+          list.innerHTML = "<p style='opacity:0.7'>No complaints found.</p>";
+        }
+      } catch (err) { list.innerHTML = "<p>Error loading history.</p>"; }
+    }
+
+    const logoutAndRedirect = (url) => {
+      signOut(auth).then(() => {
+        window.location.href = url;
+      }).catch(() => { window.location.href = url; });
+    };
+
+    document.getElementById('logoutBtn').addEventListener('click', () => logoutAndRedirect("LogIn.html"));
+    document.getElementById('login-btn').addEventListener('click', () => logoutAndRedirect("LogIn.html"));
+    document.getElementById('home-btn').addEventListener('click', () => logoutAndRedirect("index.html"));
+  </script>
+</body>
+
+</html>
