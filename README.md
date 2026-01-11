@@ -10,6 +10,17 @@
 👉 Click here to view the live project:  
 (https://authtrails-9c71e.web.app/)
 
+## 🔑 Demo Credentials
+
+The following demo credentials are provided for project evaluation and testing purposes:
+**Email:** admin@cyberguard.in  
+**Password:** Admin@1234  
+
+These credentials allow access to both the **Admin Dashboard** and **User Dashboard**.
+
+**Disclaimer:**  
+The above email ID is not genuine. Users are advised to register using a valid email address to fully utilize all user-specific features.
+
 ---
 ## 🚀 Vision
 In an era of rising digital threats, transparency and speed are critical. CyberGuard bridges the gap between victims and law enforcement by automating the reporting process and providing professional-grade tracking for every case.
